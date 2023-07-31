@@ -4,7 +4,11 @@ let currentTimestamp = 0;
 let previousTimestamp = 0;
 let timeDifference = 0;
 
-let imageBitmaps = {};
+let mainImage;
+let tmpCanvas = document.createElement("canvas");
+ctxTmp = tmpCanvas.getContext("2d");
+let imageBitmaps = [];
+let tmpImageData = [];
 let animations = {};
 
 let characters = [character_1, character_2];
@@ -27,12 +31,12 @@ function start() {
   drawStaticObject(worldStaticObjects);
 
   drawCharacter(player);
-  characters.forEach((character) => drawCharacter(character));
+  //characters.forEach((character) => drawCharacter(character));
 
   window.requestAnimationFrame(start);
 }
 
 loadResourses();
-setTimeout(createAnimationBuffers, 50);
+setTimeout(addCharacterAnimation, 150);
 
-setTimeout(start, 100);
+setTimeout(start, 250);

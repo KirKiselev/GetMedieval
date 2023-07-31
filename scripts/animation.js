@@ -1,14 +1,17 @@
-function drawCharacter(character) {
+//
+function addCharacterAnimation() {
   let animationName;
-  //
-  if (character.currentAnimation === null) {
-    animationName = character.currentState + "_" + character.currentDirection;
-    character.currentAnimation = animations[animationName].animationStart;
-    character.currentTimeBetweenFrames = 80;
-    character.lastFrameDrawtime = Date.now();
+  if (player.currentAnimation === null) {
+    animationName = "ARCHER_" + player.currentState + "_" + player.currentDirection;
+    player.currentAnimation = animations[animationName].animationStart;
+    player.currentTimeBetweenFrames = 80;
+    player.lastFrameDrawtime = Date.now();
   }
-  //
+}
 
+//
+
+function drawCharacter(character) {
   let x = character.position.x - character.currentAnimation.frame.width / 2;
   let y = character.position.y - character.currentAnimation.frame.height / 2;
 
@@ -19,7 +22,7 @@ function drawCharacter(character) {
       character.lastFrameDrawtime = currentTimestamp;
     }
   } else {
-    animationName = character.currentState + "_" + character.currentDirection;
+    animationName = "ARCHER_" + character.currentState + "_" + character.currentDirection;
     character.currentAnimation = animations[animationName].animationStart;
     ctx.drawImage(character.currentAnimation.frame, x, y);
     character.currentAnimation = character.currentAnimation.next;
@@ -34,13 +37,13 @@ function drawStaticObject(map) {
       cell = 10 * row + line;
       switch (map[cell]) {
         case 0:
-          ctx.drawImage(animations.TILES_FLOOR.animationStart.frame, line * 64, row * 64);
+          ctx.drawImage(animations.TILES_FLOOR.animationStart.frame, line * 32, row * 32);
           break;
         case 1:
-          ctx.drawImage(animations.TILES_WALLLOW.animationStart.frame, line * 64, row * 64);
+          ctx.drawImage(animations.TILES_WALLLOW.animationStart.frame, line * 32, row * 32);
           break;
         case 2:
-          ctx.drawImage(animations.TILES_WALLHIGH.animationStart.frame, line * 64, row * 64);
+          ctx.drawImage(animations.TILES_WALLHIGH.animationStart.frame, line * 32, row * 32);
           break;
       }
     }
