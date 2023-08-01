@@ -10,6 +10,7 @@ let tmpImageData = [];
 let animations = {};
 
 let selectedCharacter = "ARCHER";
+let animationsToLoad = ["ARCHER", "ORC", "SPIDER", "TILES"];
 let characters = [character_1, character_2];
 let worldStaticObjects = [
   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -35,7 +36,7 @@ function start() {
   window.requestAnimationFrame(start);
 }
 
-loadResourses();
+loadResourses(animationsToLoad);
 setTimeout(addCharacterAnimation, 150);
 
 setTimeout(start, 250);

@@ -1,3 +1,7 @@
+function createCharacter() {
+  return;
+}
+
 function setCharacterDirection(character) {
   character.previousDirection = character.currentDirection;
 
