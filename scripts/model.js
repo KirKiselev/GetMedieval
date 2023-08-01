@@ -67,8 +67,6 @@ function setCharacterState(character) {
   }
 }
 
-//____Update_model____
-
 function moveCharacter(character, deltaTime) {
   character.linar_moving = character.speed * deltaTime;
   character.diagonal_moving = character.diagSpeed * deltaTime;
@@ -143,55 +141,3 @@ function getTilesToCheck(character) {
   }
   return tilesArray;
 }
-
-/*function checkCollision(character) {
-  let characterTileY = Math.floor(character.position.y / 64);
-  let characterTileX = Math.floor(character.position.x / 64);
-  console.log("x " + x);
-  console.log("y " + y);
-
-  let distanceToClosestTile = 0;
-
-  switch (character.currentDirection) {
-    case "NORD":
-      if (worldStaticObjects[(y - 1) * 10 + x] != 0) {
-        distanceToClosestTile = (character.position.y - character.size) % 64;
-        if (distanceToClosestTile < character.linar_moving) {
-          character.linar_moving = distanceToClosestTile;
-        }
-      }
-      break;
-    case "SOUTH":
-      if (worldStaticObjects[(y + 1) * 10 + x] != 0) {
-        distanceToClosestTile = (y + 1) * 64 - character.position.y + character.size;
-        if (distanceToClosestTile < character.linar_moving) {
-          character.linar_moving = distanceToClosestTile;
-        }
-      }
-      break;
-    case "WEST":
-      if (worldStaticObjects[y * 10 + x] != 0) {
-        distanceToClosestTile = character.position.x - (x + 1) * 64;
-        if (distanceToClosestTile < character.linar_moving) {
-          character.linar_moving = distanceToClosestTile;
-        }
-      }
-      break;
-    case "EAST":
-      if (worldStaticObjects[y * 10 + x] != 0) {
-        distanceToClosestTile = x * 64 - character.position.x;
-        if (distanceToClosestTile < character.linar_moving) {
-          character.linar_moving = distanceToClosestTile;
-        }
-      }
-      break;
-    case "NORDWEST":
-      break;
-    case "NORDEAST":
-      break;
-    case "SOUTHWEST":
-      break;
-    case "SOUTHEAST":
-      break;
-  }
-}*/

@@ -1,13 +1,14 @@
 function loadResourses() {
+  console.log(Date.now() + "start");
   let image = new Image();
   image.onload = function () {
     let tmp = createImageBitmap(image, 0, 0, image.width, image.height);
     tmp.then(function (value) {
-      tmpCanvas.width = image.width;
-      tmpCanvas.height = image.height;
-      ctxTmp.drawImage(value, 0, 0);
+      let offScreenCanvas = new OffscreenCanvas(image.width, image.height);
+      let ctxOffScreen = offScreenCanvas.getContext("2d");
+      ctxOffScreen.drawImage(value, 0, 0);
       for (let elem of spritesheetsCoordinates) {
-        createAnimationBuffer(tmpCanvas, elem.start_x, elem.start_y, elem.width, elem.height, elem.frameWidth, elem.animationName);
+        createAnimationBuffer(offScreenCanvas, elem.start_x, elem.start_y, elem.width, elem.height, elem.frameWidth, elem.animationName);
       }
     });
   };

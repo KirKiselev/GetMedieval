@@ -5,12 +5,11 @@ let previousTimestamp = 0;
 let timeDifference = 0;
 
 let mainImage;
-let tmpCanvas = document.createElement("canvas");
-ctxTmp = tmpCanvas.getContext("2d");
 let imageBitmaps = [];
 let tmpImageData = [];
 let animations = {};
 
+let selectedCharacter = "ARCHER";
 let characters = [character_1, character_2];
 let worldStaticObjects = [
   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
