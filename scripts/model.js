@@ -1,5 +1,9 @@
-function createCharacter() {
-  return;
+function createPlayerCharacter(type, position, size, speed, diagSpeed, currentTimeBetweenFrames, animation, attackSpeed) {
+  player = new Character(type, position, size, speed, diagSpeed, currentTimeBetweenFrames, animation, attackSpeed);
+}
+
+function createNonPlayerCharacter(type, position, size, speed, diagSpeed, currentTimeBetweenFrames, animation, attackSpeed) {
+  characters.push(new Character(type, position, size, speed, diagSpeed, currentTimeBetweenFrames, animation, attackSpeed));
 }
 
 function setCharacterDirection(character) {
@@ -62,6 +66,7 @@ function setCharacterState(character) {
   character.previousState = character.currentState;
   if (character.actions.attack === true) {
     character.currentState = "ATTACK";
+    character.attack();
     return;
   }
   if (character.actions.up || character.actions.down || character.actions.left || character.actions.right) {

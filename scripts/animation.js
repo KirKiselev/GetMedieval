@@ -1,16 +1,3 @@
-//
-function addCharacterAnimation() {
-  let animationName;
-  if (player.currentAnimation === null) {
-    animationName = "ARCHER_" + player.currentState + "_" + player.currentDirection;
-    player.currentAnimation = animations[animationName].animationStart;
-    player.currentTimeBetweenFrames = 80;
-    player.lastFrameDrawtime = Date.now();
-  }
-}
-
-//
-
 function drawCharacter(character) {
   let x = character.position.x - character.currentAnimation.frame.width / 2;
   let y = character.position.y - character.currentAnimation.frame.height / 2;
@@ -22,7 +9,7 @@ function drawCharacter(character) {
       character.lastFrameDrawtime = currentTimestamp;
     }
   } else {
-    animationName = "ARCHER_" + character.currentState + "_" + character.currentDirection;
+    animationName = character.type + "_" + character.currentState + "_" + character.currentDirection;
     character.currentAnimation = animations[animationName].animationStart;
     ctx.drawImage(character.currentAnimation.frame, x, y);
     character.currentAnimation = character.currentAnimation.next;
@@ -30,6 +17,7 @@ function drawCharacter(character) {
   }
 }
 
+//
 function drawStaticObject(map) {
   let cell = 0;
   for (let row = 0; row < 8; row++) {
@@ -47,5 +35,17 @@ function drawStaticObject(map) {
           break;
       }
     }
+  }
+}
+//
+
+function drawProjectile(projectile) {
+  let x = projectile.position.x - projectile.currentAnimation.frame.width / 2;
+  let y = projectile.position.y - projectile.currentAnimation.frame.height / 2;
+
+  ctx.drawImage(projectile.currentAnimation.frame, x, y);
+  if (currentTimestamp - projectile.lastFrameDrawtime >= projectile.currentTimeBetweenFrames) {
+    projectile.currentAnimation = projectile.currentAnimation.next;
+    projectile.lastFrameDrawtime = currentTimestamp;
   }
 }
