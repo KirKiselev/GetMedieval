@@ -1,6 +1,6 @@
 function drawCharacter(character) {
-  let x = character.position.x - character.currentAnimation.frame.width / 2;
-  let y = character.position.y - character.currentAnimation.frame.height / 2;
+  let x = character.currentPosition.x - character.currentAnimation.frame.width / 2;
+  let y = character.currentPosition.y - character.currentAnimation.frame.height / 2;
 
   if (character.previousState === character.currentState && character.previousDirection === character.currentDirection) {
     ctx.drawImage(character.currentAnimation.frame, x, y);
@@ -18,34 +18,33 @@ function drawCharacter(character) {
 }
 
 //
-function drawStaticObject(map) {
-  let cell = 0;
-  for (let row = 0; row < 8; row++) {
-    for (let line = 0; line < 10; line++) {
-      cell = 10 * row + line;
-      switch (map[cell]) {
-        case 0:
-          ctx.drawImage(animations.TILES_FLOOR.animationStart.frame, line * 32, row * 32);
-          break;
-        case 1:
-          ctx.drawImage(animations.TILES_WALLLOW.animationStart.frame, line * 32, row * 32);
-          break;
-        case 2:
-          ctx.drawImage(animations.TILES_WALLHIGH.animationStart.frame, line * 32, row * 32);
-          break;
-      }
+function drawFloor() {
+  for (let row = 0; row < 16; row++) {
+    for (let line = 0; line < 20; line++) {
+      ctx.drawImage(animations.TILES_FLOOR.animationStart.frame, line * 32, row * 32);
     }
   }
 }
 //
 
 function drawProjectile(projectile) {
-  let x = projectile.position.x - projectile.currentAnimation.frame.width / 2;
-  let y = projectile.position.y - projectile.currentAnimation.frame.height / 2;
+  let x = projectile.currentPosition.x - projectile.currentAnimation.frame.width / 2;
+  let y = projectile.currentPosition.y - projectile.currentAnimation.frame.height / 2;
 
   ctx.drawImage(projectile.currentAnimation.frame, x, y);
   if (currentTimestamp - projectile.lastFrameDrawtime >= projectile.currentTimeBetweenFrames) {
     projectile.currentAnimation = projectile.currentAnimation.next;
     projectile.lastFrameDrawtime = currentTimestamp;
+  }
+}
+
+function drawWorldObject(object) {
+  let x = object.currentPosition.x - object.currentAnimation.frame.width / 2;
+  let y = object.currentPosition.y - object.currentAnimation.frame.height / 2;
+
+  ctx.drawImage(object.currentAnimation.frame, x, y);
+  if (currentTimestamp - object.lastFrameDrawtime >= object.currentTimeBetweenFrames) {
+    object.currentAnimation = object.currentAnimation.next;
+    object.lastFrameDrawtime = currentTimestamp;
   }
 }

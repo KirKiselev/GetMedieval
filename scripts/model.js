@@ -1,9 +1,39 @@
-function createPlayerCharacter(type, position, size, speed, diagSpeed, currentTimeBetweenFrames, animation, attackSpeed) {
-  player = new Character(type, position, size, speed, diagSpeed, currentTimeBetweenFrames, animation, attackSpeed);
+function getID() {
+  globalID++;
+  return "objectNumber" + globalID;
 }
 
-function createNonPlayerCharacter(type, position, size, speed, diagSpeed, currentTimeBetweenFrames, animation, attackSpeed) {
-  characters.push(new Character(type, position, size, speed, diagSpeed, currentTimeBetweenFrames, animation, attackSpeed));
+function createPlayerCharacter(id, type, position, size, speed, diagSpeed, currentTimeBetweenFrames, animation, attackSpeed) {
+  player = new Character(id, type, position, size, speed, diagSpeed, currentTimeBetweenFrames, animation, attackSpeed);
+  updateWorldTilesArray(player);
+}
+
+function createNonPlayerCharacter(id, type, position, size, speed, diagSpeed, currentTimeBetweenFrames, animation, attackSpeed) {
+  characters.push(new Character(id, type, position, size, speed, diagSpeed, currentTimeBetweenFrames, animation, attackSpeed));
+  updateWorldTilesArray(characters[characters.length - 1]);
+}
+
+function createWorldObjects(map) {
+  let cell = 0;
+  for (let row = 0; row < 16; row++) {
+    for (let line = 0; line < 20; line++) {
+      cell = 20 * row + line;
+      switch (map[cell]) {
+        case 1:
+          worldObjects.push(new WorldObject(getID(), "TILES_WALLLOW", { x: line * 32 + 16, y: row * 32 + 16 }, 16, 16, 1000));
+          //
+          updateWorldTilesArray(worldObjects[worldObjects.length - 1]);
+          //
+          break;
+        case 2:
+          worldObjects.push(new WorldObject(getID(), "TILES_WALLLOW", { x: line * 32 + 16, y: row * 32 + 16 }, 16, 16, 1000));
+          //
+          updateWorldTilesArray(worldObjects[worldObjects.length - 1]);
+          //
+          break;
+      }
+    }
+  }
 }
 
 function setCharacterDirection(character) {
@@ -77,45 +107,115 @@ function setCharacterState(character) {
 }
 
 function moveCharacter(character, deltaTime) {
-  character.linar_moving = character.speed * deltaTime;
-  character.diagonal_moving = character.diagSpeed * deltaTime;
+  character.linarMoving = character.speed * deltaTime;
+  character.diagonalMoving = character.diagSpeed * deltaTime;
 
-  if (character.currentState == "MOVE") {
+  if (character.currentState === "MOVE") {
     switch (character.currentDirection) {
       case "NORD":
-        character.position.y -= character.linar_moving;
+        character.nextPosition.y = character.currentPosition.y - character.linarMoving;
         break;
       case "SOUTH":
-        character.position.y += character.linar_moving;
+        character.nextPosition.y = character.currentPosition.y + character.linarMoving;
         break;
       case "WEST":
-        character.position.x -= character.linar_moving;
+        character.nextPosition.x = character.currentPosition.x - character.linarMoving;
         break;
       case "EAST":
-        character.position.x += character.linar_moving;
+        character.nextPosition.x = character.currentPosition.x + character.linarMoving;
         break;
       case "NORDWEST":
-        character.position.x -= character.diagonal_moving;
-        character.position.y -= character.diagonal_moving;
+        character.nextPosition.x = character.currentPosition.x - character.diagonalMoving;
+        character.nextPosition.y = character.currentPosition.y - character.diagonalMoving;
         break;
       case "NORDEAST":
-        character.position.x += character.diagonal_moving;
-        character.position.y -= character.diagonal_moving;
+        character.nextPosition.x = character.currentPosition.x + character.diagonalMoving;
+        character.nextPosition.y = character.currentPosition.y - character.diagonalMoving;
         break;
       case "SOUTHWEST":
-        character.position.x -= character.diagonal_moving;
-        character.position.y += character.diagonal_moving;
+        character.nextPosition.x = character.currentPosition.x - character.diagonalMoving;
+        character.nextPosition.y = character.currentPosition.y + character.diagonalMoving;
         break;
       case "SOUTHEAST":
-        character.position.x += character.diagonal_moving;
-        character.position.y += character.diagonal_moving;
+        character.nextPosition.x = character.currentPosition.x + character.diagonalMoving;
+        character.nextPosition.y = character.currentPosition.y + character.diagonalMoving;
         break;
+    }
+
+    //checkCollision(character, characters[0]);
+    checkCollision(character, worldObjects[0]);
+    //updateWorldTilesArray(character);
+  }
+}
+
+function checkCollision(
+  object_1,
+  object_2,
+  callback = () => {
+    console.log("CALLBACK");
+  }
+) {
+  if (object_1.collisionModel === "circle") {
+    if (object_2.collisionModel === "circle") {
+      let distance = Math.pow(object_1.nextPosition.x - object_2.currentPosition.x, 2) + Math.pow(object_1.nextPosition.y - object_2.currentPosition.y, 2);
+      if (distance >= Math.pow(object_1.size + object_2.size, 2)) {
+        //
+        object_1.currentPosition.x = object_1.nextPosition.x;
+        object_1.currentPosition.y = object_1.nextPosition.y;
+        //
+      }
+    }
+    //object_2.collisionModel === "square"
+    else {
+      if (Math.abs(object_1.nextPosition.x - object_2.currentPosition.x) >= object_1.size + object_2.sizeX || Math.abs(object_1.nextPosition.y - object_2.currentPosition.y) >= object_1.size + object_2.sizeY) {
+        object_1.currentPosition.x = object_1.nextPosition.x;
+        object_1.currentPosition.y = object_1.nextPosition.y;
+      }
     }
   }
 }
 
-function checkCollision(object_1, object_2, callback) {
-  return;
+function updateWorldTilesArray(object) {
+  let tileXMin = 0;
+  let tileXMax = 0;
+  let tileYMin = 0;
+  let tileYMax = 0;
+  let position = 0;
+  let id = object.id;
+
+  if (object.collisionModel === "circle") {
+    tileXMin = Math.floor((object.currentPosition.x - object.size) / 32);
+    tileYMin = Math.floor((object.currentPosition.y - object.size) / 32);
+    tileXMax = Math.floor((object.currentPosition.x + object.size) / 32);
+    tileYMax = Math.floor((object.currentPosition.y + object.size) / 32);
+  } else {
+    tileXMin = Math.floor((object.currentPosition.x - object.sizeX - 1) / 32);
+    if (tileXMin < 0) {
+      tileXMin = 0;
+    }
+    tileYMin = Math.floor((object.currentPosition.y - object.sizeY - 1) / 32);
+    if (tileYMin < 0) {
+      tileYMin = 0;
+    }
+    tileXMax = Math.floor((object.currentPosition.x + object.sizeX - 1) / 32);
+    if (tileXMax < 0) {
+      tileXMax = 0;
+    }
+    tileYMax = Math.floor((object.currentPosition.y + object.sizeY - 1) / 32);
+    if (tileYMax < 0) {
+      tileYMax = 0;
+    }
+  }
+
+  for (let line = tileYMin; line <= tileYMax; line++) {
+    for (let column = tileXMin; column <= tileXMax; column++) {
+      position = line * 20 + column;
+      if (!worldTilesArray[position]) {
+        worldTilesArray[position] = new Object();
+      }
+      worldTilesArray[position][id] = object;
+    }
+  }
 }
 
 function getTilesToCheck(character) {
