@@ -19,9 +19,15 @@ class Frame {
 }
 
 class Character {
-  constructor(id, type, position, size, speed, diagSpeed, currentTimeBetweenFrames, animation = { IDLE: 1, MOVE: 1, ATTACK: 1 }, timeBetweenAttacks) {
+  constructor(id, isPlayer, type, position, size, speed, diagSpeed, currentTimeBetweenFrames, animation = { IDLE: 1, MOVE: 1, ATTACK: 1 }, timeBetweenAttacks) {
     this.id = id;
+    this.isPlayer = isPlayer;
     this.type = type;
+    this.tilesArrayInfo = [];
+    this.tileXMin = 0;
+    this.tileYMin = 0;
+    this.tileXMax = 0;
+    this.tileYMax = 0;
 
     this.actions = { up: false, down: false, left: false, right: false, attack: false };
 
@@ -30,14 +36,11 @@ class Character {
     this.currentPosition = { ...position };
     this.nextPosition = { ...position };
     this.size = size;
-    this.xMin = position.x - size;
-    this.xMax = position.x + size;
-    this.yMin = position.y - size;
-    this.yMax = position.y + size;
     this.speed = speed;
     this.diagSpeed = diagSpeed;
     this.linarMoving = 0;
     this.diagonalMoving = 0;
+    this.isMoveAvailable = true; // can character move in this iteration
 
     this.collisionModel = "circle";
     //character have only one of three states in a time: "IDLE", "MOVE", "ATTACK"
@@ -52,7 +55,7 @@ class Character {
   }
   attack() {
     if (currentTimestamp >= this.nextAttackTime) {
-      projectiles.push(new Projectile(getID(), this.type, this.currentDirection, this.previousDirection, { ...this.currentPosition }, 5, 0.5, 0.4, 80, { IDLE: 1, MOVE: 1, ATTACK: 1 }, 50));
+      projectiles.push(new Projectile(getID(), this.isPlayer, this.type, this.currentDirection, this.previousDirection, { ...this.currentPosition }, 5, 0.5, 0.4, 80, { IDLE: 1, MOVE: 1, ATTACK: 1 }, 50));
       updateWorldTilesArray(projectiles[projectiles.length - 1]);
       this.nextAttackTime = currentTimestamp + this.timeBetweenAttacks;
     }
@@ -60,23 +63,27 @@ class Character {
 }
 
 class Projectile {
-  constructor(id, type, currentDirection, previousDirection, position, size, speed, diagSpeed, currentTimeBetweenFrames, animation = { IDLE: 1, MOVE: 1, ATTACK: 1 }, damage) {
+  constructor(id, isPlayer, type, currentDirection, previousDirection, position, size, speed, diagSpeed, currentTimeBetweenFrames, animation = { IDLE: 1, MOVE: 1, ATTACK: 1 }, damage) {
     this.id = id;
+    this.isPlayer = isPlayer;
     this.type = type;
+    this.tilesArrayInfo = [];
+    this.tileXMin = 0;
+    this.tileYMin = 0;
+    this.tileXMax = 0;
+    this.tileYMax = 0;
 
     this.currentDirection = currentDirection;
     this.previousDirection = previousDirection;
     this.currentPosition = { ...position };
     this.nextPosition = { ...position };
     this.size = size;
-    this.xMin = position.x - size;
-    this.xMax = position.x + size;
-    this.yMin = position.y - size;
-    this.yMax = position.y + size;
+
     this.speed = speed;
     this.diagSpeed = diagSpeed;
     this.linarMoving = 0;
     this.diagonalMoving = 0;
+    this.isMoveAvailable = true;
 
     this.collisionModel = "circle";
 
@@ -95,14 +102,15 @@ class WorldObject {
   constructor(id, type, position, halfSizeX, halfSizeY, currentTimeBetweenFrames) {
     this.id = id;
     this.type = type;
+    this.tilesArrayInfo = [];
+    this.tileXMin = 0;
+    this.tileYMin = 0;
+    this.tileXMax = 0;
+    this.tileYMax = 0;
 
     this.currentPosition = { ...position };
     this.sizeX = halfSizeX;
     this.sizeY = halfSizeY;
-    this.xMin = position.x - halfSizeX;
-    this.xMax = position.x + halfSizeX;
-    this.yMin = position.y - halfSizeY;
-    this.yMax = position.y + halfSizeY;
 
     this.collisionModel = "square";
 

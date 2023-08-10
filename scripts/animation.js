@@ -19,8 +19,8 @@ function drawCharacter(character) {
 
 //
 function drawFloor() {
-  for (let row = 0; row < 16; row++) {
-    for (let line = 0; line < 20; line++) {
+  for (let row = 0; row < worldHeight; row++) {
+    for (let line = 0; line < worldWidth; line++) {
       ctx.drawImage(animations.TILES_FLOOR.animationStart.frame, line * 32, row * 32);
     }
   }

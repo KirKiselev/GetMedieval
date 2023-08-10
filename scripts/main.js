@@ -10,7 +10,7 @@ let tmpImageData = [];
 let animations = {};
 
 //
-let charactersToLoad = [["SPIDER", { x: 256, y: 128 }, 20, 0.2, 0.15, 80, { IDLE: 1, MOVE: 1, ATTACK: 1 }, 500]];
+let charactersToLoad = [[false, "SPIDER", { x: 256, y: 128 }, 20, 0.2, 0.15, 80, { IDLE: 1, MOVE: 1, ATTACK: 1 }, 500]];
 //
 let selectedCharacter = "ARCHER";
 let animationsToLoad = ["ARCHER", "ORC", "SPIDER", "TILES"];
@@ -20,13 +20,16 @@ let projectiles = [];
 //
 let worldStaticObjects = [
   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0,
-  1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 ];
 //
+let worldWidth = 20;
+let worldHeight = 16;
+//
 let worldObjects = [];
-let worldTilesArray = [];
+let worldTilesArray = {};
 
 function start() {
   previousTimestamp = currentTimestamp;
@@ -44,9 +47,9 @@ function start() {
   setCharacterState(player);
   moveCharacter(player, timeDifference);
   drawCharacter(player);
-  //ctx.fillRect(player.currentPosition.x - player.size, player.currentPosition.y - player.size, player.size * 2, player.size * 2);
+  ctx.fillRect(player.currentPosition.x - player.size, player.currentPosition.y - player.size, player.size * 2, player.size * 2);
 
-  characters.forEach((character) => moveCharacter(character));
+  characters.forEach((character) => moveCharacter(character, timeDifference));
   characters.forEach((character) => drawCharacter(character));
 
   window.requestAnimationFrame(start);
@@ -56,7 +59,7 @@ loadResourses(animationsToLoad);
 
 ////type, position, size, speed, diagSpeed, currentTimeBetweenFrames, animation = { IDLE: 1, MOVE: 1, ATTACK: 1 }, attackSpeed
 setTimeout(() => {
-  createPlayerCharacter(getID(), selectedCharacter, { x: 64, y: 128 }, 15, 0.2, 0.15, 80, { IDLE: 1, MOVE: 1, ATTACK: 1 }, 400);
+  createPlayerCharacter(getID(), true, selectedCharacter, { x: 64, y: 128 }, 15, 0.2, 0.15, 80, { IDLE: 1, MOVE: 1, ATTACK: 1 }, 400);
 
   for (let elem of charactersToLoad) {
     createNonPlayerCharacter(getID(), ...elem);
