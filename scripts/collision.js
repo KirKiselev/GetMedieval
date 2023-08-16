@@ -1,43 +1,19 @@
-/*function checkCollision(object_1, object_2) {
+function checkCollision(object_1, object_2) {
+  //at this moment only movable objects have "circle" collision model
   if (object_1 != object_2) {
     if (object_1.collisionModel === "circle") {
       if (object_2.collisionModel === "circle") {
         let distance = Math.pow(object_1.nextPosition.x - object_2.currentPosition.x, 2) + Math.pow(object_1.nextPosition.y - object_2.currentPosition.y, 2);
-        if (distance >= Math.pow(object_1.size + object_2.size, 2)) {
-          //
-          object_1.currentPosition.x = object_1.nextPosition.x;
-          object_1.currentPosition.y = object_1.nextPosition.y;
-          return;
-          //
-        }
-        console.log("collision with " + object_2.id);
-      }
-      //object_2.collisionModel === "square"
-      else {
-        if (Math.abs(object_1.nextPosition.x - object_2.currentPosition.x) >= object_1.size + object_2.sizeX || Math.abs(object_1.nextPosition.y - object_2.currentPosition.y) >= object_1.size + object_2.sizeY) {
-          object_1.currentPosition.x = object_1.nextPosition.x;
-          object_1.currentPosition.y = object_1.nextPosition.y;
-          return;
-        }
-        console.log("collision with " + object_2.id);
-      }
-    }
-  }
-}*/
-
-function checkCollision(object_1, object_2) {
-  if (object_1 != object_2 && object_1.isPlayer != object_2.isPlayer) {
-    if (object_1.collisionModel === "circle") {
-      if (object_2.collisionModel === "circle") {
-        let distance = Math.pow(object_1.nextPosition.x - object_2.currentPosition.x, 2) + Math.pow(object_1.nextPosition.y - object_2.currentPosition.y, 2);
         if (distance < Math.pow(object_1.size + object_2.size, 2)) {
-          object_1.isMoveAvailable = false;
+          //object_1.isMoveAvailable = false;
+          collisionHandler(object_1, object_2);
         }
       }
       //object_2.collisionModel === "square"
       else {
         if (!(Math.abs(object_1.nextPosition.x - object_2.currentPosition.x) - 1 > object_1.size + object_2.sizeX || Math.abs(object_1.nextPosition.y - object_2.currentPosition.y) - 1 > object_1.size + object_2.sizeY)) {
-          object_1.isMoveAvailable = false;
+          //object_1.isMoveAvailable = false;
+          collisionHandler(object_1, object_2);
         }
       }
     }
@@ -60,25 +36,25 @@ function updateWorldTilesArray(object) {
   object.tilesArrayInfo.length = 0;
 
   if (object.collisionModel === "circle") {
-    tileXMin = Math.floor((object.currentPosition.x - object.size) / 32);
-    tileYMin = Math.floor((object.currentPosition.y - object.size) / 32);
-    tileXMax = Math.floor((object.currentPosition.x + object.size - 1) / 32);
+    tileXMin = Math.floor((object.currentPosition.x - object.size) / tileSize);
+    tileYMin = Math.floor((object.currentPosition.y - object.size) / tileSize);
+    tileXMax = Math.floor((object.currentPosition.x + object.size - 1) / tileSize);
     if (tileXMax < 0) {
       tileXMax = 0;
     }
-    tileYMax = Math.floor((object.currentPosition.y + object.size - 1) / 32);
+    tileYMax = Math.floor((object.currentPosition.y + object.size - 1) / tileSize);
     if (tileYMax < 0) {
       tileYMax = 0;
     }
   } else {
-    tileXMin = Math.floor((object.currentPosition.x - object.sizeX) / 32);
-    tileYMin = Math.floor((object.currentPosition.y - object.sizeY) / 32);
+    tileXMin = Math.floor((object.currentPosition.x - object.sizeX) / tileSize);
+    tileYMin = Math.floor((object.currentPosition.y - object.sizeY) / tileSize);
 
-    tileXMax = Math.floor((object.currentPosition.x + object.sizeX - 1) / 32);
+    tileXMax = Math.floor((object.currentPosition.x + object.sizeX - 1) / tileSize);
     if (tileXMax < 0) {
       tileXMax = 0;
     }
-    tileYMax = Math.floor((object.currentPosition.y + object.sizeY - 1) / 32);
+    tileYMax = Math.floor((object.currentPosition.y + object.sizeY - 1) / tileSize);
     if (tileYMax < 0) {
       tileYMax = 0;
     }
@@ -203,3 +179,62 @@ function getObjectsToCheck(array) {
   }
   return objectsToCheck;
 }
+
+//
+function collisionHandler(object_1, object_2) {
+  switch (object_1.type) {
+    case "PLAYER":
+      switch (object_2.type) {
+        case "NON_STATIC_OBJECT":
+          object_2.interaction(object_1);
+          break;
+        case "NPC_PROJECTILE":
+          console.log("collision with npc projectile");
+          break;
+        default:
+          object_1.isMoveAvailable = false;
+      }
+      break;
+    case "NPC":
+      switch (object_2.type) {
+        case "PLAYER_PROJECTILE":
+          console.log("collision with player projectile");
+          break;
+        default:
+          object_1.isMoveAvailable = false;
+      }
+      break;
+    case "PLAYER_PROJECTILE":
+      switch (object_2.type) {
+        case "NPC":
+          console.log("collision with npc");
+          object_1.doDamage(object_2);
+          break;
+        case "STATIC_OBJECT":
+          if (object_2.subtype === "HIGH") {
+            console.log("collision with static object");
+          }
+          break;
+        case "NON_STATIC_OBJECT":
+          if (object_2.subtype === "HIGH") {
+            console.log("collision with non static object");
+          }
+          break;
+      }
+      break;
+    case "NPC_PROJECTILE":
+      switch (object_2.type) {
+        case "PLAYER":
+          console.log("collision with player");
+          object_1.doDamage(object_2);
+          break;
+        case "STATIC_OBJECT":
+          if (object_2.subtype === "HIGH") {
+            console.log("collision with static object");
+          }
+          break;
+      }
+      break;
+  }
+}
+//

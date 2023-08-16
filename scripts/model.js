@@ -3,32 +3,63 @@ function getID() {
   return "objectNumber" + globalID;
 }
 
-function createPlayerCharacter(id, isPlayer, type, position, size, speed, diagSpeed, currentTimeBetweenFrames, animation, attackSpeed) {
-  player = new Character(id, isPlayer, type, position, size, speed, diagSpeed, currentTimeBetweenFrames, animation, attackSpeed);
+function createPlayerCharacter(id, type, animationName, position, size, speed, diagSpeed, currentTimeBetweenFrames, animation, attackSpeed, health) {
+  player = new Character(id, type, animationName, position, size, speed, diagSpeed, currentTimeBetweenFrames, animation, attackSpeed, health);
   updateWorldTilesArray(player);
 }
-
-function createNonPlayerCharacter(id, isPlayer, type, position, size, speed, diagSpeed, currentTimeBetweenFrames, animation, attackSpeed) {
-  characters.push(new Character(id, isPlayer, type, position, size, speed, diagSpeed, currentTimeBetweenFrames, animation, attackSpeed));
+//constructor(id, type, animationName, position, size, speed, diagSpeed, currentTimeBetweenFrames, animation = { IDLE: 1, MOVE: 1, ATTACK: 1 }, timeBetweenAttacks, health)
+function createNonPlayerCharacter(id, type, animationName, position, size, speed, diagSpeed, currentTimeBetweenFrames, animation, attackSpeed, health) {
+  characters.push(new Character(id, type, animationName, position, size, speed, diagSpeed, currentTimeBetweenFrames, animation, attackSpeed, health));
   updateWorldTilesArray(characters[characters.length - 1]);
 }
 
 function createWorldObjects(map) {
   let cell = 0;
-  for (let row = 0; row < 16; row++) {
-    for (let line = 0; line < 20; line++) {
-      cell = 20 * row + line;
+  for (let row = 0; row < worldHeight; row++) {
+    for (let line = 0; line < worldWidth; line++) {
+      cell = worldWidth * row + line;
       switch (map[cell]) {
+        case 0:
+          worldStaticObjects.push(new WorldObject(getID(), "STATIC_OBJECT", "LOW", "TILES_FLOOR", { x: line * 32 + 16, y: row * 32 + 16 }, 16, 16, 1000));
+
+          break;
         case 1:
-          worldObjects.push(new WorldObject(getID(), "TILES_WALLLOW", { x: line * 32 + 16, y: row * 32 + 16 }, 16, 16, 1000));
+          worldStaticObjects.push(new WorldObject(getID(), "STATIC_OBJECT", "LOW", "TILES_WALLLOW", { x: line * 32 + 16, y: row * 32 + 16 }, 16, 16, 1000));
           //
-          updateWorldTilesArray(worldObjects[worldObjects.length - 1]);
+          updateWorldTilesArray(worldStaticObjects[worldStaticObjects.length - 1]);
           //
           break;
         case 2:
-          worldObjects.push(new WorldObject(getID(), "TILES_WALLHIGH", { x: line * 32 + 16, y: row * 32 + 16 }, 16, 16, 1000));
+          worldStaticObjects.push(new WorldObject(getID(), "STATIC_OBJECT", "HIGH", "TILES_WALLHIGH", { x: line * 32 + 16, y: row * 32 + 16 }, 16, 16, 1000));
           //
-          updateWorldTilesArray(worldObjects[worldObjects.length - 1]);
+          updateWorldTilesArray(worldStaticObjects[worldStaticObjects.length - 1]);
+          //
+          break;
+        case 3:
+          worldNonStaticObjects.push(new WorldObject(getID(), "NON_STATIC_OBJECT", "LOW", "TREASURE_1", { x: line * 32 + 16, y: row * 32 + 16 }, 16, 16, 1000));
+          worldNonStaticObjects[worldNonStaticObjects.length - 1].interaction = (object) => {
+            object.score += 100;
+          };
+          //
+          updateWorldTilesArray(worldNonStaticObjects[worldNonStaticObjects.length - 1]);
+          //
+          break;
+        case 4:
+          worldNonStaticObjects.push(new WorldObject(getID(), "NON_STATIC_OBJECT", "HIGH", "TREASURECHEST", { x: line * 32 + 16, y: row * 32 + 16 }, 16, 16, 80));
+          worldNonStaticObjects[worldNonStaticObjects.length - 1].interaction = (object) => {
+            return;
+          };
+          //
+          updateWorldTilesArray(worldNonStaticObjects[worldNonStaticObjects.length - 1]);
+          //
+          break;
+        case 5:
+          worldNonStaticObjects.push(new WorldObject(getID(), "NON_STATIC_OBJECT", "LOW", "HEALTH", { x: line * 32 + 16, y: row * 32 + 16 }, 16, 16, 80));
+          worldNonStaticObjects[worldNonStaticObjects.length - 1].interaction = (object) => {
+            object.health += 100;
+          };
+          //
+          updateWorldTilesArray(worldNonStaticObjects[worldNonStaticObjects.length - 1]);
           //
           break;
       }
@@ -149,7 +180,7 @@ function moveCharacter(character, deltaTime) {
     tiles = getTilesToCheck(character);
     objects = getObjectsToCheck(tiles);
 
-    checkCollision(character, worldObjects[0]);
+    //checkCollision(character, worldObjects[0]);
     for (let elem in objects) {
       checkCollision(character, objects[elem]);
     }
@@ -157,6 +188,9 @@ function moveCharacter(character, deltaTime) {
     if (character.isMoveAvailable) {
       character.currentPosition.x = character.nextPosition.x;
       character.currentPosition.y = character.nextPosition.y;
+    } else {
+      character.nextPosition.x = character.currentPosition.x;
+      character.nextPosition.y = character.currentPosition.y;
     }
 
     updateWorldTilesArray(character);

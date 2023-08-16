@@ -116,4 +116,7 @@ let spritesheetsCoordinates = {
     { start_x: 0, start_y: 901, width: 192, height: 41, frameWidth: 48, animationName: "SPIDER_ATTACK_SOUTHWEST" },
     { start_x: 0, start_y: 942, width: 176, height: 47, frameWidth: 44, animationName: "SPIDER_ATTACK_NORDWEST" },
   ],
+  TREASURE_1: [{ start_x: 0, start_y: 0, width: 20, height: 14, frameWidth: 20, animationName: "TREASURE_1" }],
+  TREASURECHEST: [{ start_x: 0, start_y: 0, width: 1288, height: 52, frameWidth: 56, animationName: "TREASURECHEST" }],
+  HEALTH: [{ start_x: 0, start_y: 0, width: 192, height: 26, frameWidth: 24, animationName: "HEALTH" }],
 };

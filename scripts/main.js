@@ -9,26 +9,32 @@ let imageBitmaps = [];
 let tmpImageData = [];
 let animations = {};
 
-//
-let charactersToLoad = [[false, "SPIDER", { x: 256, y: 128 }, 20, 0.2, 0.15, 80, { IDLE: 1, MOVE: 1, ATTACK: 1 }, 500]];
+//constructor(id, type, animationName, position, size, speed, diagSpeed, currentTimeBetweenFrames, animation = { IDLE: 1, MOVE: 1, ATTACK: 1 }, timeBetweenAttacks, health)
+let charactersToLoad = [["NPC", "SPIDER", { x: 320, y: 128 }, 20, 0.2, 0.15, 80, { IDLE: 1, MOVE: 1, ATTACK: 1 }, 500, 500]];
 //
 let selectedCharacter = "ARCHER";
-let animationsToLoad = ["ARCHER", "ORC", "SPIDER", "TILES"];
+let animationsToLoad = ["ARCHER", "ORC", "SPIDER", "TILES", "TREASURE_1", "TREASURECHEST", "HEALTH"];
 let player = null;
 let characters = [];
 let projectiles = [];
 //
-let worldStaticObjects = [
-  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0,
-  2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+let worldMap = [
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0,
+  2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 1, 1, 0, 0, 0, 0, 2, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0,
+  0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0,
+  0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 2, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0,
+  0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 ];
 //
-let worldWidth = 20;
+let worldWidth = 40;
 let worldHeight = 16;
+let tileSize = 32;
 //
-let worldObjects = [];
+let worldStaticObjects = [];
+let worldNonStaticObjects = [];
 let worldTilesArray = {};
 
 function start() {
@@ -36,36 +42,34 @@ function start() {
   currentTimestamp = Date.now();
   timeDifference = currentTimestamp - previousTimestamp;
 
-  drawFloor();
-  worldObjects.forEach((object) => drawWorldObject(object));
-
   projectiles.forEach((projectile) => moveCharacter(projectile, timeDifference)); // same method realization
-  projectiles.forEach((projectile) => drawProjectile(projectile));
 
   getPlayerActions();
   setCharacterDirection(player);
   setCharacterState(player);
   moveCharacter(player, timeDifference);
-  drawCharacter(player);
-  ctx.fillRect(player.currentPosition.x - player.size, player.currentPosition.y - player.size, player.size * 2, player.size * 2);
 
   characters.forEach((character) => moveCharacter(character, timeDifference));
-  characters.forEach((character) => drawCharacter(character));
+
+  drawVisibleArea(player);
+  /*worldStaticObjects.forEach((object) => drawWorldObject(object));
+  projectiles.forEach((projectile) => drawProjectile(projectile));
+  drawCharacter(player);
+  characters.forEach((character) => drawCharacter(character));*/
 
   window.requestAnimationFrame(start);
 }
 
 loadResourses(animationsToLoad);
 
-////type, position, size, speed, diagSpeed, currentTimeBetweenFrames, animation = { IDLE: 1, MOVE: 1, ATTACK: 1 }, attackSpeed
 setTimeout(() => {
-  createPlayerCharacter(getID(), true, selectedCharacter, { x: 64, y: 128 }, 15, 0.2, 0.15, 80, { IDLE: 1, MOVE: 1, ATTACK: 1 }, 400);
+  createPlayerCharacter(getID(), "PLAYER", selectedCharacter, { x: 320, y: 240 }, 15, 0.2, 0.15, 80, { IDLE: 1, MOVE: 1, ATTACK: 1 }, 400, 1000);
 
   for (let elem of charactersToLoad) {
     createNonPlayerCharacter(getID(), ...elem);
   }
 
-  createWorldObjects(worldStaticObjects);
+  createWorldObjects(worldMap);
 
   start();
 }, 100);
