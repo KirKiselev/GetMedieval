@@ -18,10 +18,10 @@ function createWorldObjects(map) {
   for (let row = 0; row < worldHeight; row++) {
     for (let line = 0; line < worldWidth; line++) {
       cell = worldWidth * row + line;
-      switch (map[cell]) {
+      switch (map[cell][0]) {
         case 0:
-          worldStaticObjects.push(new WorldObject(getID(), "STATIC_OBJECT", "LOW", "TILES_FLOOR", { x: line * 32 + 16, y: row * 32 + 16 }, 16, 16, 1000));
-
+          worldStaticObjects.push(new WorldObject(getID(), "NONCOLLIDING", "LOW", "TILES_FLOOR", { x: line * 32 + 16, y: row * 32 + 16 }, 16, 16, 1000));
+          updateWorldTilesArray(worldStaticObjects[worldStaticObjects.length - 1]);
           break;
         case 1:
           worldStaticObjects.push(new WorldObject(getID(), "STATIC_OBJECT", "LOW", "TILES_WALLLOW", { x: line * 32 + 16, y: row * 32 + 16 }, 16, 16, 1000));
@@ -35,31 +35,35 @@ function createWorldObjects(map) {
           updateWorldTilesArray(worldStaticObjects[worldStaticObjects.length - 1]);
           //
           break;
+      }
+      switch (map[cell][1]) {
         case 3:
-          worldNonStaticObjects.push(new WorldObject(getID(), "NON_STATIC_OBJECT", "LOW", "TREASURE_1", { x: line * 32 + 16, y: row * 32 + 16 }, 16, 16, 1000));
-          worldNonStaticObjects[worldNonStaticObjects.length - 1].interaction = (object) => {
-            object.score += 100;
+          worldNonStaticObjects.push(new WorldObject(getID(), "NON_STATIC_OBJECT", "LOW", "TREASURE_1", { x: line * 32 + 16, y: row * 32 + 16 }, 8, 8, 1000));
+          worldNonStaticObjects.end.value.interaction = (object_1, object_2) => {
+            object_1.score += 100;
+            deleteObject(object_2);
           };
           //
-          updateWorldTilesArray(worldNonStaticObjects[worldNonStaticObjects.length - 1]);
+          updateWorldTilesArray(worldNonStaticObjects.end.value);
           //
           break;
         case 4:
-          worldNonStaticObjects.push(new WorldObject(getID(), "NON_STATIC_OBJECT", "HIGH", "TREASURECHEST", { x: line * 32 + 16, y: row * 32 + 16 }, 16, 16, 80));
-          worldNonStaticObjects[worldNonStaticObjects.length - 1].interaction = (object) => {
+          worldNonStaticObjects.push(new WorldObject(getID(), "NON_STATIC_OBJECT", "HIGH", "TREASURECHEST", { x: line * 32 + 16, y: row * 32 + 16 }, 14, 14, 80));
+          worldNonStaticObjects.end.value.interaction = (object) => {
             return;
           };
           //
-          updateWorldTilesArray(worldNonStaticObjects[worldNonStaticObjects.length - 1]);
+          updateWorldTilesArray(worldNonStaticObjects.end.value);
           //
           break;
         case 5:
           worldNonStaticObjects.push(new WorldObject(getID(), "NON_STATIC_OBJECT", "LOW", "HEALTH", { x: line * 32 + 16, y: row * 32 + 16 }, 16, 16, 80));
-          worldNonStaticObjects[worldNonStaticObjects.length - 1].interaction = (object) => {
-            object.health += 100;
+          worldNonStaticObjects.end.value.interaction = (object_1, object_2) => {
+            object_1.health += 100;
+            deleteObject(object_2);
           };
           //
-          updateWorldTilesArray(worldNonStaticObjects[worldNonStaticObjects.length - 1]);
+          updateWorldTilesArray(worldNonStaticObjects.end.value);
           //
           break;
       }
@@ -180,19 +184,21 @@ function moveCharacter(character, deltaTime) {
     tiles = getTilesToCheck(character);
     objects = getObjectsToCheck(tiles);
 
-    //checkCollision(character, worldObjects[0]);
     for (let elem in objects) {
       checkCollision(character, objects[elem]);
     }
-
-    if (character.isMoveAvailable) {
-      character.currentPosition.x = character.nextPosition.x;
-      character.currentPosition.y = character.nextPosition.y;
+    if (!character.mustBeDeleted) {
+      if (character.isMoveAvailable) {
+        character.currentPosition.x = character.nextPosition.x;
+        character.currentPosition.y = character.nextPosition.y;
+        updateWorldTilesArray(character);
+      } else {
+        character.nextPosition.x = character.currentPosition.x;
+        character.nextPosition.y = character.currentPosition.y;
+      }
     } else {
-      character.nextPosition.x = character.currentPosition.x;
-      character.nextPosition.y = character.currentPosition.y;
+      //deleteFromWorldTilesArray(character);
+      deleteObject(character);
     }
-
-    updateWorldTilesArray(character);
   }
 }

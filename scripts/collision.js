@@ -30,7 +30,7 @@ function updateWorldTilesArray(object) {
 
   if (object.tilesArrayInfo.length != 0) {
     for (let elem of object.tilesArrayInfo) {
-      delete worldTilesArray[elem][object.id];
+      delete worldTilesArray[elem][id];
     }
   }
   object.tilesArrayInfo.length = 0;
@@ -185,11 +185,15 @@ function collisionHandler(object_1, object_2) {
   switch (object_1.type) {
     case "PLAYER":
       switch (object_2.type) {
+        case "NONCOLLIDING":
+          break;
         case "NON_STATIC_OBJECT":
-          object_2.interaction(object_1);
+          object_2.interaction(object_1, object_2);
+          //deleteObject(object_2);
           break;
         case "NPC_PROJECTILE":
           console.log("collision with npc projectile");
+        case "PLAYER_PROJECTILE":
           break;
         default:
           object_1.isMoveAvailable = false;
@@ -197,6 +201,8 @@ function collisionHandler(object_1, object_2) {
       break;
     case "NPC":
       switch (object_2.type) {
+        case "NONCOLLIDING":
+          break;
         case "PLAYER_PROJECTILE":
           console.log("collision with player projectile");
           break;
@@ -206,13 +212,20 @@ function collisionHandler(object_1, object_2) {
       break;
     case "PLAYER_PROJECTILE":
       switch (object_2.type) {
+        case "NONCOLLIDING":
+          break;
+        case "PLAYER":
+          break;
         case "NPC":
           console.log("collision with npc");
           object_1.doDamage(object_2);
+          object_1.mustBeDeleted = true;
           break;
         case "STATIC_OBJECT":
           if (object_2.subtype === "HIGH") {
+            object_1.isMoveAvailable = false;
             console.log("collision with static object");
+            object_1.mustBeDeleted = true;
           }
           break;
         case "NON_STATIC_OBJECT":
@@ -224,6 +237,8 @@ function collisionHandler(object_1, object_2) {
       break;
     case "NPC_PROJECTILE":
       switch (object_2.type) {
+        case "NONCOLLIDING":
+          break;
         case "PLAYER":
           console.log("collision with player");
           object_1.doDamage(object_2);
@@ -238,3 +253,28 @@ function collisionHandler(object_1, object_2) {
   }
 }
 //
+
+function deleteFromWorldTilesArray(object) {
+  let id = object.id;
+  for (let elem of object.tilesArrayInfo) {
+    delete worldTilesArray[elem][id];
+  }
+}
+
+function deleteObject(object) {
+  deleteFromWorldTilesArray(object);
+  switch (object.type) {
+    case "PLAYER_PROJECTILE":
+      projectiles.delete(object);
+      break;
+    case "NPC_PROJECTILE":
+      projectiles.delete(object);
+      break;
+    case "CHARACTER":
+      characters.delete(object);
+      break;
+    case "NON_STATIC_OBJECT":
+      worldNonStaticObjects.delete(object);
+      break;
+  }
+}

@@ -24,7 +24,7 @@ class LinkedList {
     this.start = null;
     this.end = null;
   }
-  add(object) {
+  push(object) {
     if (this.start) {
       this.end.next = new ListNode(this.end, null, object);
       this.end = this.end.next;
@@ -44,12 +44,28 @@ class LinkedList {
       this.end = null;
       this.length = 0;
     } else {
-      object.prev.next = object.next;
-      object.next.prev = object.prev;
-      object.next = null;
-      object.prev = null;
+      if (object.prev != null) {
+        object.prev.next = object.next;
+        object.prev = null;
+      }
+      if (object.next != null) {
+        object.next.prev = object.prev;
+        object.next = null;
+      }
+
       this.length--;
     }
+  }
+
+  forEach(callback) {
+    let current = this.start;
+    if (current == null) {
+      return;
+    }
+    do {
+      callback(current.value);
+      current = current.next;
+    } while (current != null);
   }
 }
 
@@ -101,7 +117,7 @@ class Character {
   attack() {
     if (currentTimestamp >= this.nextAttackTime) {
       projectiles.push(new Projectile(getID(), this.type, this.animationName, this.currentDirection, this.previousDirection, { ...this.currentPosition }, 5, 0.5, 0.4, 80, { IDLE: 1, MOVE: 1, ATTACK: 1 }, 50));
-      updateWorldTilesArray(projectiles[projectiles.length - 1]);
+      updateWorldTilesArray(projectiles.end.value);
       this.nextAttackTime = currentTimestamp + this.timeBetweenAttacks;
     }
   }
