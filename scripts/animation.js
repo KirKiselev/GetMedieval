@@ -75,6 +75,10 @@ function drawVisibleArea() {
   correctionY = startRow * tileSize - cameraPositionY;
   let cell;
   // draw floor
+  //
+  ctx.font = "36 px";
+  ctx.fillStyle = "#FF0000";
+  //
   for (let row = 0; row <= visibleAreaHeight; row++) {
     for (let column = 0; column <= visibleAreaWidth; column++) {
       absoluteRow = row + startRow;
@@ -82,7 +86,8 @@ function drawVisibleArea() {
       cell = absoluteRow * worldWidth + absoluteColumn;
 
       if (cell < worldWidth * worldHeight) {
-        ctx.drawImage(worldStaticObjects[22].currentAnimation.frame, column * tileSize + correctionX, row * tileSize + correctionY);
+        ctx.drawImage(worldStaticObjects[cell].currentAnimation.frame, column * tileSize + correctionX, row * tileSize + correctionY);
+        ctx.fillText(cell, column * tileSize + correctionX + 8, row * tileSize + correctionY + 16);
       }
     }
   }

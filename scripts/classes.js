@@ -78,7 +78,8 @@ class ListNode {
 }
 
 class Character {
-  constructor(id, type, animationName, position, size, speed, diagSpeed, currentTimeBetweenFrames, animation = { IDLE: 1, MOVE: 1, ATTACK: 1 }, timeBetweenAttacks, health) {
+  constructor(id, type, animationName, position, size, speed, diagSpeed, currentTimeBetweenFrames, animation = { IDLE: 1, MOVE: 1, ATTACK: 1 }, timeBetweenAttacks, health, projectileSize, attackDistance) {
+    this.isActive = false;
     this.id = id;
     this.type = type;
     this.animationName = animationName;
@@ -113,10 +114,12 @@ class Character {
     this.timeBetweenAttacks = timeBetweenAttacks;
 
     this.health = health;
+    this.projectileSize = projectileSize;
+    this.attackDistance = attackDistance;
   }
   attack() {
     if (currentTimestamp >= this.nextAttackTime) {
-      projectiles.push(new Projectile(getID(), this.type, this.animationName, this.currentDirection, this.previousDirection, { ...this.currentPosition }, 5, 0.5, 0.4, 80, { IDLE: 1, MOVE: 1, ATTACK: 1 }, 50));
+      projectiles.push(new Projectile(getID(), this.type, this.animationName, this.currentDirection, this.previousDirection, { ...this.currentPosition }, this.projectileSize, 0.5, 0.4, 80, { IDLE: 1, MOVE: 1, ATTACK: 1 }, 50));
       updateWorldTilesArray(projectiles.end.value);
       this.nextAttackTime = currentTimestamp + this.timeBetweenAttacks;
     }
@@ -163,7 +166,8 @@ class Projectile {
 }
 
 class WorldObject {
-  constructor(id, type, subtype, animationName, position, halfSizeX, halfSizeY, currentTimeBetweenFrames) {
+  constructor(id, type, subtype, animationName, position, halfSizeX, halfSizeY, currentTimeBetweenFrames, haveActiveAbilities = false) {
+    this.haveActiveAbilities = haveActiveAbilities;
     this.id = id;
     this.type = type;
     this.subtype = subtype;

@@ -3,13 +3,13 @@ function getID() {
   return "objectNumber" + globalID;
 }
 
-function createPlayerCharacter(id, type, animationName, position, size, speed, diagSpeed, currentTimeBetweenFrames, animation, attackSpeed, health) {
-  player = new Character(id, type, animationName, position, size, speed, diagSpeed, currentTimeBetweenFrames, animation, attackSpeed, health);
+function createPlayerCharacter(id, type, animationName, position, size, speed, diagSpeed, currentTimeBetweenFrames, animation, attackSpeed, health, projectileSize, attackDistance = null) {
+  player = new Character(id, type, animationName, position, size, speed, diagSpeed, currentTimeBetweenFrames, animation, attackSpeed, health, projectileSize, attackDistance);
   updateWorldTilesArray(player);
 }
 //constructor(id, type, animationName, position, size, speed, diagSpeed, currentTimeBetweenFrames, animation = { IDLE: 1, MOVE: 1, ATTACK: 1 }, timeBetweenAttacks, health)
-function createNonPlayerCharacter(id, type, animationName, position, size, speed, diagSpeed, currentTimeBetweenFrames, animation, attackSpeed, health) {
-  characters.push(new Character(id, type, animationName, position, size, speed, diagSpeed, currentTimeBetweenFrames, animation, attackSpeed, health));
+function createNonPlayerCharacter(id, type, animationName, position, size, speed, diagSpeed, currentTimeBetweenFrames, animation, attackSpeed, health, projectileSize, attackDistance = undefined) {
+  characters.push(new Character(id, type, animationName, position, size, speed, diagSpeed, currentTimeBetweenFrames, animation, attackSpeed, health, projectileSize, (attackDistance = size + 2)));
   updateWorldTilesArray(characters[characters.length - 1]);
 }
 
@@ -201,4 +201,44 @@ function moveCharacter(character, deltaTime) {
       deleteObject(character);
     }
   }
+}
+
+function getObjectsToActivation() {
+  let tileXMin = Math.max(0, Math.floor(player.tileXMin - visibleAreaWidth / 2));
+  let tileXMax = Math.min(worldWidth - 1, Math.floor(player.tileXMax + visibleAreaWidth / 2));
+  let tileYMin = Math.max(0, Math.floor(player.tileYMin - visibleAreaHeight / 2));
+  let tileYMax = Math.min(worldHeight - 1, Math.floor(player.tileYMax + visibleAreaHeight / 2));
+  let objectsInArea = {};
+  let charactersInArea = {};
+  let cell = 0;
+  let tmp = null;
+
+  for (let row = tileYMin; row < tileYMax; row++) {
+    for (let column = tileXMin; column < tileXMax; column++) {
+      cell = row * worldWidth + column;
+      for (let elem in worldTilesArray[cell]) {
+        if (worldTilesArray[cell][elem].type === "NPC") {
+          tmp = worldTilesArray[cell][elem].id;
+          if (charactersInArea[tmp] === undefined) {
+            charactersInArea[tmp] = worldTilesArray[cell][elem];
+          }
+        }
+        if (worldTilesArray[cell][elem].haveActiveAbilities === true) {
+          if (objectsInArea[tmp] === undefined) {
+            objectsInArea[tmp] = worldTilesArray[cell][elem];
+          }
+        }
+      }
+    }
+  }
+
+  return [charactersInArea, objectsInArea];
+}
+
+function setInactive(character) {
+  character.actions.up = false;
+  character.actions.down = false;
+  character.actions.left = false;
+  character.actions.right = false;
+  character.actions.attack = false;
 }

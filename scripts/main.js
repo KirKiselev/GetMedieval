@@ -10,7 +10,7 @@ let tmpImageData = [];
 let animations = {};
 
 //
-let charactersToLoad = [["NPC", "SPIDER", { x: 320, y: 128 }, 20, 0.2, 0.15, 80, { IDLE: 1, MOVE: 1, ATTACK: 1 }, 500, 500]];
+let charactersToLoad = [["NPC", "SPIDER", { x: 320 + 16, y: 128 + 16 }, 12, 0.1, 0.075, 80, { IDLE: 1, MOVE: 1, ATTACK: 1 }, 500, 500, 20]];
 //
 //
 let selectedCharacter = "ARCHER";
@@ -28,366 +28,62 @@ let worldNonStaticObjects = new LinkedList();
 //let characters = new LinkedList();
 let projectiles = new LinkedList();
 
-//
-let worldMap = [
-  [2],
-  [2],
-  [2],
-  [2],
-  [2],
-  [2],
-  [2],
-  [2],
-  [2],
-  [2],
-  [2],
-  [2],
-  [2],
-  [2],
-  [2],
-  [2],
-  [2],
-  [2],
-  [2],
-  [2],
-  [2],
-  [2],
-  [0, 3],
-  [0, 3],
-  [0, 3],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0, 5],
-  [2],
-  [2],
-  [2],
-  [0, 3],
-  [0],
-  [0],
-  [0],
-  [2],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [2],
-  [0],
-  [0],
-  [0],
-  [2],
-  [2],
-  [2],
-  [0, 3],
-  [0],
-  [0, 4],
-  [0],
-  [2],
-  [0],
-  [0],
-  [2],
-  [0],
-  [0],
-  [0],
-  [2],
-  [0],
-  [0],
-  [2],
-  [0],
-  [0],
-  [0],
-  [2],
-  [2],
-  [2],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [2],
-  [0],
-  [0],
-  [0],
-  [2],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [2],
-  [2],
-  [2],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [2],
-  [2],
-  [2],
-  [0],
-  [0],
-  [0],
-  [2],
-  [2],
-  [2],
-  [0],
-  [0],
-  [0],
-  [0],
-  [2],
-  [2],
-  [2],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [2],
-  [2],
-  [2],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [2],
-  [2],
-  [2],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [2],
-  [2],
-  [2],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [2],
-  [2],
-  [2],
-  [0],
-  [0],
-  [0],
-  [2],
-  [2],
-  [2],
-  [0],
-  [0],
-  [0],
-  [0],
-  [2],
-  [2],
-  [2],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [2],
-  [0],
-  [0],
-  [0],
-  [2],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [2],
-  [2],
-  [2],
-  [0],
-  [0],
-  [0],
-  [0],
-  [2],
-  [0],
-  [0],
-  [2],
-  [0],
-  [0],
-  [0],
-  [2],
-  [0],
-  [0],
-  [2],
-  [0],
-  [0],
-  [0],
-  [2],
-  [2],
-  [2],
-  [0],
-  [0],
-  [0],
-  [0],
-  [2],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [2],
-  [0],
-  [0],
-  [0],
-  [2],
-  [2],
-  [2],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [0],
-  [2],
-  [2],
-  [2],
-  [2],
-  [2],
-  [2],
-  [2],
-  [2],
-  [2],
-  [2],
-  [2],
-  [2],
-  [2],
-  [2],
-  [2],
-  [2],
-  [2],
-  [2],
-  [2],
-  [2],
-  [2],
-  [2],
-  [2],
-  [2],
-  [2],
-  [2],
-  [2],
-  [2],
-  [2],
-  [2],
-  [2],
-  [2],
-  [2],
-  [2],
-  [2],
-  [2],
-  [2],
-  [2],
-  [2],
-  [2],
-  [2],
-  [2],
-  [2],
-  [2],
-];
-//
-let worldWidth = 21;
-let worldHeight = 16;
 let tileSize = 32;
 //
 
 let worldTilesArray = {};
 
+let flag = false;
+
 function start() {
+  let [activeCharacters, activeObjects] = getObjectsToActivation();
+  let currentNPC;
+
   previousTimestamp = currentTimestamp;
   currentTimestamp = Date.now();
+  if (previousTimestamp === 0) {
+    previousTimestamp = currentTimestamp - 16;
+  }
   timeDifference = currentTimestamp - previousTimestamp;
 
   projectiles.forEach((projectile) => moveCharacter(projectile, timeDifference)); // same method realization
 
-  getPlayerActions();
   setCharacterDirection(player);
   setCharacterState(player);
   moveCharacter(player, timeDifference);
 
-  characters.forEach((character) => moveCharacter(character, timeDifference));
+  for (let characterID in activeCharacters) {
+    currentNPC = activeCharacters[characterID];
+
+    if (isAttackDistanceReach(currentNPC, player)) {
+      if (isTargetOnFiringLine(currentNPC, player)) {
+        currentNPC.path = undefined;
+        attackTarget();
+      } else {
+        findPath(currentNPC, player);
+      }
+    } else {
+      if (currentNPC.path === undefined) {
+        findPath(currentNPC, player);
+      } else {
+        if (!isPathActual(currentNPC, player)) {
+          findPath(currentNPC, player);
+        }
+      }
+
+      moveToTile(currentNPC, currentNPC.path[0]);
+    }
+
+    setCharacterDirection(currentNPC);
+    setCharacterState(currentNPC);
+    moveCharacter(currentNPC, timeDifference);
+  }
+
+  /*characters.forEach((character) => {
+    setCharacterDirection(character);
+    setCharacterState(character);
+    moveCharacter(character, timeDifference);
+  });*/
 
   drawVisibleArea();
   /*worldStaticObjects.forEach((object) => drawWorldObject(object));
@@ -401,7 +97,8 @@ function start() {
 loadResourses(animationsToLoad);
 
 setTimeout(() => {
-  createPlayerCharacter(getID(), "PLAYER", selectedCharacter, { x: 320, y: 240 }, 14, 0.2, 0.15, 80, { IDLE: 1, MOVE: 1, ATTACK: 1 }, 400, 1000);
+  createPlayerCharacter(getID(), "PLAYER", selectedCharacter, { x: 384, y: 240 }, 14, 0.2, 0.15, 80, { IDLE: 1, MOVE: 1, ATTACK: 1 }, 400, 1000, 1);
+  getPlayerActions();
 
   for (let elem of charactersToLoad) {
     createNonPlayerCharacter(getID(), ...elem);
